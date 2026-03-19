@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="/Users/sainikhildatla/Downloads/Chinook_Sqlite.sqlite" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="3350"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="Album" custom_title="0" dock_id="1" table="4,5:mainAlbum"/><dock_state state="000000ff00000000fd00000001000000020000000000000000fc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000010100ffffff000000000000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="Album" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="63"/><column index="2" value="300"/><column index="3" value="59"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1*">-- Query 1: Show first 10 customers
+SELECT * FROM Customer
+LIMIT 10;
+
+-- Query 2: Total customers by country
+SELECT Country, COUNT(*) AS TotalCustomers
+FROM Customer
+GROUP BY Country
+ORDER BY TotalCustomers DESC;
+
+-- Query 3: Total revenue by country
+SELECT BillingCountry, ROUND(SUM(Total), 2) AS TotalRevenue
+FROM Invoice
+GROUP BY BillingCountry
+ORDER BY TotalRevenue DESC;
+
+
+-- Query 4: Top 10 customers by spending
+SELECT c.FirstName, c.LastName, c.Country, ROUND(SUM(i.Total), 2) AS TotalSpent
+FROM Customer c
+JOIN Invoice i ON c.CustomerId = i.CustomerId
+GROUP BY c.CustomerId
+ORDER BY TotalSpent DESC
+LIMIT 10;
+
+-- Query 5: Best selling genres
+SELECT g.Name AS Genre, COUNT(il.TrackId) AS TotalSales
+FROM Genre g
+JOIN Track t ON g.GenreId = t.GenreId
+JOIN InvoiceLine il ON t.TrackId = il.TrackId
+GROUP BY g.GenreId
+ORDER BY TotalSales DESC;
+
+-- Query 6: Top 10 best selling artists
+SELECT ar.Name AS Artist, COUNT(il.TrackId) AS TotalSales
+FROM Artist ar
+JOIN Album al ON ar.ArtistId = al.ArtistId
+JOIN Track t ON al.AlbumId = t.AlbumId
+JOIN InvoiceLine il ON t.TrackId = il.TrackId
+GROUP BY ar.ArtistId
+ORDER BY TotalSales DESC
+LIMIT 10;
+
+-- Query 7: Monthly revenue trend
+SELECT strftime('%Y-%m', InvoiceDate) AS Month, 
+ROUND(SUM(Total), 2) AS MonthlyRevenue
+FROM Invoice
+GROUP BY Month
+ORDER BY Month;
+
+-- Query 8: Top 10 best selling tracks
+SELECT t.Name AS Track, ar.Name AS Artist, COUNT(il.TrackId) AS TotalSales
+FROM Track t
+JOIN InvoiceLine il ON t.TrackId = il.TrackId
+JOIN Album al ON t.AlbumId = al.AlbumId
+JOIN Artist ar ON al.ArtistId = ar.ArtistId
+GROUP BY t.TrackId
+ORDER BY TotalSales DESC
+LIMIT 10;</sql><current_tab id="0"/></tab_sql></sqlb_project>
